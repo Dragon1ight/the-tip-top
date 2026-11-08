@@ -20,13 +20,25 @@ final class Db
         if (empty($url['host'])) {
             throw new \RuntimeException('DATABASE_URL absente.');
         }
-        $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $url['host'], $url['port'] ?? 3306, ltrim($url['path'] ?? '', '/'));
+        $name = preg_replace('/[^A-Za-z0-9_]/', '', ltrim($url['path'] ?? '', '/'));
+        $dsn = sprintf('mysql:host=%s;port=%d;charset=utf8mb4', $url['host'], $url['port'] ?? 3306);
         $options = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC, \PDO::ATTR_EMULATE_PREPARES => false];
         if ($this->site->env('DB_SSL', '0') === '1') {
             $options[\PDO::MYSQL_ATTR_SSL_CA] = '/etc/ssl/certs/ca-certificates.crt';
         }
 
-        return $this->pdo = new \PDO($dsn, rawurldecode($url['user'] ?? ''), rawurldecode($url['pass'] ?? ''), $options);
+        // DB_PASSWORD évite d'encoder dans une URL un mot de passe contenant des caractères spéciaux.
+        $password = $this->site->env('DB_PASSWORD') ?? rawurldecode($url['pass'] ?? '');
+        $this->pdo = new \PDO($dsn, rawurldecode($url['user'] ?? ''), $password, $options);
+        try {
+            $this->pdo->exec('USE `'.$name.'`');
+        } catch (\PDOException) {
+            // Première connexion : l'hébergeur fournit un serveur sans base applicative.
+            $this->pdo->exec('CREATE DATABASE IF NOT EXISTS `'.$name.'` CHARACTER SET utf8mb4');
+            $this->pdo->exec('USE `'.$name.'`');
+        }
+
+        return $this->pdo;
     }
 
     public function run(string $sql, array $params = []): \PDOStatement
