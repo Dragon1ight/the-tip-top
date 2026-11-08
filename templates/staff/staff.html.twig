@@ -1,0 +1,8 @@
+{% extends 'staff/layout.html.twig' %}
+{% block title %}Employés — Thé Tip Top{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap"><h1>Employés</h1>
+<div class="scroll"><table class="tbl"><thead><tr><th scope="col">Nom</th><th scope="col">Identifiant</th><th scope="col">Rôle</th><th scope="col">Boutique</th><th scope="col">Accès</th></tr></thead><tbody>{% for e in rows %}<tr><td>{{ e.nom }}</td><td>{{ e.identifiant }}</td><td>{{ e.role }}</td><td>{{ e.boutique }}</td><td><form class="inline" method="post" action="{{ path('admin_staff_toggle',{id:e.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('emp' ~ e.id) }}"><button class="btn btn-ghost">{{ e.actif ? 'Révoquer' : 'Rétablir' }}</button></form></td></tr>{% endfor %}</tbody></table></div>
+<form method="post" class="card"><h2>Nouveau compte</h2><input type="hidden" name="_token" value="{{ csrf_token('staff') }}"><label for="n">Nom</label><input id="n" name="nom" required><label for="i">Identifiant</label><input id="i" name="identifiant" autocomplete="off" required><label for="p">Mot de passe</label><input id="p" type="password" name="password" autocomplete="new-password" required><label for="r">Rôle</label><select id="r" name="role"><option value="employe">Employé</option><option value="admin">Administrateur</option><option value="huissier">Huissier</option></select><label for="b">Boutique</label><select id="b" name="boutique_id"><option value="">Aucune</option>{% for b in boutiques %}<option value="{{ b.id }}">{{ b.ville }}</option>{% endfor %}</select><button class="btn btn-sec">Créer</button></form>
+</div></section>
+{% endblock %}

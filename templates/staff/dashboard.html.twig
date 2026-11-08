@@ -1,0 +1,6 @@
+{% extends 'staff/layout.html.twig' %}
+{% block title %}Tableau de bord — Thé Tip Top{% endblock %}
+{% block head %}<script src="/vendor/vue.runtime.global.prod.js" defer></script><script src="/vendor/chart.umd.js" defer></script><script src="/assets/js/admin.js" defer></script>{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap"><h1>Tableau de bord</h1><div id="dash" data-url="{{ path('admin_stats') }}"><p>Chargement des statistiques…</p></div></div></section>
+{% endblock %}

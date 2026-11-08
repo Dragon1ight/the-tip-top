@@ -1,0 +1,27 @@
+services:
+  web:
+    build: .
+    ports: ["8080:10000"]
+    environment:
+      APP_ENV: prod
+      APP_SECRET: local-dev-only
+      SITE_ENV: dev
+      SITE_URL: http://localhost:8080
+      DATABASE_URL: mysql://ttt:ttt_local@db:3306/ttt
+      REDIS_URL: redis://redis:6379
+      GAME_FORCE_OPEN: "1"
+      API_HMAC_SECRET: local-dev-only
+      ADMIN_LOGIN: admin
+      ADMIN_PASSWORD: LocalAdmin2026x
+      EMPLOYE_LOGIN: boutique
+      EMPLOYE_PASSWORD: LocalShop2026xx
+      HUISSIER_LOGIN: huissier
+      HUISSIER_PASSWORD: LocalBailiff26x
+    depends_on:
+      db: { condition: service_healthy }
+  db:
+    image: mariadb:11
+    environment: { MARIADB_DATABASE: ttt, MARIADB_USER: ttt, MARIADB_PASSWORD: ttt_local, MARIADB_RANDOM_ROOT_PASSWORD: "1" }
+    healthcheck: { test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"], interval: 3s, retries: 30 }
+  redis:
+    image: redis:7-alpine

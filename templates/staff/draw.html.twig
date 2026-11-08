@@ -1,0 +1,9 @@
+{% extends 'staff/layout.html.twig' %}
+{% block title %}Tirage du gros lot — Thé Tip Top{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap narrow"><h1>Tirage du gros lot</h1>
+<p>{{ inscrits }} participants inscrits, chacun pour une seule entrée.</p>
+{% if t.verrouille %}{% include 'staff/_draw_result.html.twig' %}
+{% else %}<form method="post" class="card" data-confirm="Lancer le tirage ? Il ne pourra pas être rejoué."><input type="hidden" name="_token" value="{{ csrf_token('draw') }}"><p>Le tirage est exécuté côté serveur, journalisé puis verrouillé. Il est possible après le {{ site.dateFr(site.claimEnd) }}.</p><button class="btn btn-main">Lancer le tirage</button></form>{% endif %}
+</div></section>
+{% endblock %}

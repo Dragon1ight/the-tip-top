@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block title %}Les lots du jeu-concours Thé Tip Top{% endblock %}
+{% block description %}Infuseur à thé, boîtes de thé détox ou signature, coffrets découverte à 39 € et 69 € : la répartition exacte des lots du jeu-concours Thé Tip Top.{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap narrow" data-page="lots">
+  <h1>Les lots à gagner</h1>
+  <p>Tous les tickets sont gagnants. Chaque code est associé à son lot avant l'ouverture du jeu, ce qui garantit le respect exact des pourcentages déposés avec le règlement.</p>
+  {% include 'public/_lots.html.twig' %}
+  <table class="tbl"><caption>Répartition sur les 500 000 codes</caption><thead><tr><th scope="col">Lot</th><th scope="col">Part des tickets</th><th scope="col">Nombre</th></tr></thead><tbody>
+  <tr><td>Un infuseur à thé</td><td>60 %</td><td>300 000</td></tr><tr><td>Une boîte de 100 g de thé détox ou d'infusion</td><td>20 %</td><td>100 000</td></tr><tr><td>Une boîte de 100 g de thé signature</td><td>10 %</td><td>50 000</td></tr><tr><td>Un coffret découverte d'une valeur de 39 €</td><td>6 %</td><td>30 000</td></tr><tr><td>Un coffret découverte d'une valeur de 69 €</td><td>4 %</td><td>20 000</td></tr></tbody></table>
+  <div class="grand"><strong>360 €</strong><div><h2>Le gros lot : un an de thé</h2><p>Un tirage au sort, effectué sous le contrôle de Maître Arnaud Rick, huissier de justice, désigne le gagnant. Chaque participant compte pour une seule entrée.</p></div></div>
+  <p><a class="btn btn-main" data-cta href="{{ path('home') }}#code">Je participe</a></p>
+</div></section>
+{% endblock %}

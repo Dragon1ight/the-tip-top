@@ -1,0 +1,8 @@
+{% extends 'staff/layout.html.twig' %}
+{% block title %}Emailing — Thé Tip Top{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap narrow"><h1>Exporter un segment</h1>
+<p>{{ count }} contacts ont consenti à recevoir des communications commerciales. Seuls ces contacts sont exportables.</p>
+<form method="get" action="{{ path('admin_mail_export') }}" class="card"><label for="z">Début de code postal (facultatif)</label><input id="z" name="zone" inputmode="numeric"><label for="l">Lot obtenu</label><select id="l" name="lot"><option value="">Tous</option><option value="1">Infuseur</option><option value="2">Détox ou infusion</option><option value="3">Signature</option><option value="4">Coffret 39 €</option><option value="5">Coffret 69 €</option></select><label for="m">Mode de remise</label><select id="m" name="mode"><option value="">Tous</option><option value="boutique">Boutique</option><option value="expedition">Expédition</option></select><button class="btn btn-sec">Exporter en CSV</button></form>
+</div></section>
+{% endblock %}

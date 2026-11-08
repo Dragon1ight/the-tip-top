@@ -1,0 +1,10 @@
+{% extends 'staff/layout.html.twig' %}
+{% block title %}Participants — Thé Tip Top{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap"><h1>Participants</h1>
+<form method="get" class="card"><label for="q">Rechercher (e-mail ou nom)</label><div class="row"><input id="q" name="q" value="{{ q }}"><button class="btn btn-sec">Rechercher</button></div></form>
+<div class="scroll"><table class="tbl"><thead><tr><th scope="col">E-mail</th><th scope="col">Nom</th><th scope="col">Inscrit le</th><th scope="col">Opt-in</th><th scope="col">Statut</th><th scope="col">Actions</th></tr></thead><tbody>
+{% for u in rows %}<tr><td>{{ u.email }}</td><td>{{ u.prenom }} {{ u.nom }}</td><td>{{ u.cree_le|date('d/m/Y') }}</td><td>{{ u.marketing_optin ? 'Oui' : 'Non' }}</td><td>{{ u.supprime_le ? 'Supprimé' : (u.suspendu ? 'Suspendu' : 'Actif') }}</td>
+<td>{% if not u.supprime_le %}<form class="inline" method="post" action="{{ path('admin_user_action',{id:u.id,action:u.suspendu ? 'retablir' : 'suspendre'}) }}"><input type="hidden" name="_token" value="{{ csrf_token('user' ~ u.id) }}"><button class="btn btn-ghost">{{ u.suspendu ? 'Rétablir' : 'Suspendre' }}</button></form><form class="inline" method="post" action="{{ path('admin_user_action',{id:u.id,action:'supprimer'}) }}" data-confirm="Supprimer ce compte ?"><input type="hidden" name="_token" value="{{ csrf_token('user' ~ u.id) }}"><button class="btn btn-danger">Supprimer</button></form>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div></section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+{% block title %}Votre lot — Thé Tip Top{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap narrow">
+  {% if nouveau %}<p class="eyebrow dark" data-won>Votre code est validé</p>{% endif %}
+  <h1>{{ g.libelle }}</h1>
+  <p>Code <span class="mono">{{ g.code_valeur }}</span>, enregistré le {{ g.attribue_le|date('d/m/Y à H:i') }}. À réclamer avant le {{ site.dateFr(g.date_limite|date_modify('+0 day')) }}.</p>
+  {% if g.lot_id == 1 %}<p>Il n'a l'air de rien, mais il change tout : l'infuseur est l'objet qui installe un rituel. Retrouvez nos conseils d'infusion sur nos réseaux.</p>{% endif %}
+  {% if g.affiche == 'a_retirer' %}
+  <div class="card"><h2>Comment souhaitez-vous recevoir votre lot ?</h2>
+  <form method="post" action="{{ path('gain_mode',{id:g.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('mode' ~ g.id) }}">
+  <fieldset><legend class="sr">Mode de remise</legend>
+  <label class="check"><input type="radio" name="mode" value="boutique"{% if g.mode_remise != 'expedition' %} checked{% endif %}> Retrait en boutique</label>
+  <label for="bq">Boutique</label><select id="bq" name="boutique_id">{% for b in boutiques %}<option value="{{ b.id }}"{% if b.id == g.boutique_id %} selected{% endif %}>{{ b.ville }} — {{ b.adresse }}</option>{% endfor %}</select>
+  <label class="check"><input type="radio" name="mode" value="expedition"{% if g.mode_remise == 'expedition' %} checked{% endif %}> Expédition (France métropolitaine et Monaco)</label>
+  <label for="ad">Adresse complète</label><textarea id="ad" name="adresse" rows="2" autocomplete="street-address">{{ g.adresse_expedition }}</textarea>
+  </fieldset><button class="btn btn-sec">Enregistrer mon choix</button></form></div>
+  {% else %}<p class="tag tag-{{ g.affiche }}">{{ {remis:'Remis',expedie:'Expédié',expire:'Expiré'}[g.affiche] }}</p>{% endif %}
+  <p><a href="{{ path('my_gains') }}">Retour à mes participations</a></p>
+</div></section>
+{% endblock %}

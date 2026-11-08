@@ -1,0 +1,9 @@
+{% extends 'staff/layout.html.twig' %}
+{% block title %}Journal du tirage — Thé Tip Top{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap"><h1>Journal du tirage</h1>
+<p>{{ inscrits }} participants inscrits.</p>
+{% if t.verrouille %}{% include 'staff/_draw_result.html.twig' %}{% else %}<p class="flash flash-info">Le tirage n'a pas encore été effectué.</p>{% endif %}
+<h2>Journal des actions</h2><div class="scroll"><table class="tbl"><thead><tr><th scope="col">Date</th><th scope="col">Auteur</th><th scope="col">Action</th><th scope="col">Cible</th></tr></thead><tbody>{% for l in logs %}<tr><td>{{ l.horodatage|date('d/m/Y H:i') }}</td><td>{{ l.auteur }}</td><td>{{ l.action }}</td><td>{{ l.cible }}</td></tr>{% endfor %}</tbody></table></div>
+</div></section>
+{% endblock %}

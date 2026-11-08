@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes données — Thé Tip Top{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap narrow">
+  <h1>Mes données personnelles</h1>
+  <div class="card"><h2>Mes informations</h2><p>{{ p.prenom }} {{ p.nom }}<br>{{ p.email }}</p><p><a class="btn btn-ghost" href="{{ path('my_export') }}">Exporter mes données (JSON)</a></p></div>
+  <div class="card"><h2>Mes préférences</h2><form method="post" action="{{ path('my_prefs') }}"><input type="hidden" name="_token" value="{{ csrf_token('prefs') }}"><label class="check"><input type="checkbox" name="marketing"{% if p.marketing_optin %} checked{% endif %}> Recevoir les actualités et offres de Thé Tip Top</label><button class="btn btn-sec">Enregistrer</button></form></div>
+  <div class="card"><h2>Supprimer mon compte</h2><p>Vos données d'identité seront effacées. Les lots déjà attribués restent conservés de façon anonyme pour la preuve de régularité du jeu.</p><form method="post" action="{{ path('my_delete') }}" data-confirm="Supprimer définitivement votre compte ?"><input type="hidden" name="_token" value="{{ csrf_token('delete') }}"><button class="btn btn-danger">Supprimer mon compte</button></form></div>
+</div></section>
+{% endblock %}

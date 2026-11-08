@@ -1,0 +1,5 @@
+<form class="code-form" method="post" action="{{ action|default(path('play')) }}" data-track="participation">
+  <input type="hidden" name="_token" value="{{ csrf_token('play') }}">
+  <label for="code">Votre code à dix caractères</label>
+  <div class="row"><input id="code" class="mono" name="code" required maxlength="14" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="AB3K 7Q9X MT"><button class="btn btn-main" data-cta>Je participe</button></div>
+</form>

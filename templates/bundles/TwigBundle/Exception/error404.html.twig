@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+{% block title %}Page introuvable — Thé Tip Top{% endblock %}
+{% block description %}Cette page n'existe pas. Retrouvez le jeu-concours Thé Tip Top, ses lots et son règlement.{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap narrow">
+  <h1>Cette page est introuvable</h1>
+  <p>L'adresse a peut-être changé. Votre code, lui, vous attend toujours.</p>
+  {% include 'public/_code_form.html.twig' %}
+  <p><a href="{{ path('home') }}">Accueil</a> · <a href="{{ path('lots') }}">Les lots</a> · <a href="/reglement">Le règlement</a></p>
+</div></section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes participations — Thé Tip Top{% endblock %}
+{% block description %}Historique de vos gains au jeu-concours Thé Tip Top.{% endblock %}
+{% set labels = {a_retirer:'À retirer',remis:'Remis',expedie:'Expédié',expire:'Expiré'} %}
+{% block body %}
+<section class="plain"><div class="wrap">
+  <h1>Mes participations</h1>
+  {% if stats.a_retirer %}<p class="flash flash-warn">Il vous reste un délai pour réclamer vos lots. Passé le {{ site.dateFr(site.claimEnd) }}, les lots non retirés seront définitivement perdus.</p>{% endif %}
+  <ul class="kpis"><li><strong>{{ stats.codes }}</strong>Codes saisis</li><li><strong>{{ stats.a_retirer }}</strong>Lots à retirer</li><li><strong>{{ stats.tirage ? 'Oui' : 'Non' }}</strong>Inscrit au tirage du gros lot</li></ul>
+  <div class="cols"><div class="card"><h2>Historique de mes gains</h2>
+  {% if gains is empty %}<p>Vous n'avez pas encore saisi de code.</p>{% endif %}
+  <ul class="hist">{% for g in gains %}<li><span>{{ g.attribue_le|date('d/m/Y') }}</span><span class="mono">{{ g.code_valeur }}</span><span><a href="{{ path('gain_show',{id:g.id}) }}">{{ g.libelle }}</a><small>{% if g.mode_remise == 'expedition' %}Expédition{% elseif g.boutique %}{{ g.boutique }}{% else %}Mode de remise à choisir{% endif %}</small></span><span class="tag tag-{{ g.affiche }}">{{ labels[g.affiche] }}</span></li>{% endfor %}</ul></div>
+  <aside><div class="card"><h2>Un nouveau ticket ?</h2>{% include 'public/_code_form.html.twig' with {action: path('my_play')} %}</div>
+  <div class="card"><h2>Mes données</h2><p>Consultez, exportez ou supprimez vos données personnelles.</p><p><a href="{{ path('my_data') }}">Gérer mes données</a></p></div></aside></div>
+</div></section>
+{% endblock %}

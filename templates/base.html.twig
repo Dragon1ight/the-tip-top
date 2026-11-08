@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Jeu-concours Thé Tip Top{% endblock %}</title>
+<meta name="description" content="{% block description %}Jeu-concours Thé Tip Top : tous les tickets sont gagnants.{% endblock %}">
+{% set canonical = site.url ~ app.request.pathInfo %}
+<link rel="canonical" href="{{ canonical }}">
+{% if not site.isProd %}<meta name="robots" content="noindex, nofollow">{% endif %}
+<meta property="og:type" content="website"><meta property="og:locale" content="fr_FR"><meta property="og:site_name" content="Thé Tip Top">
+<meta property="og:title" content="{{ block('title')|striptags }}"><meta property="og:description" content="{{ block('description')|striptags }}"><meta property="og:url" content="{{ canonical }}">
+<meta property="og:image" content="{{ site.url }}/assets/img/logo-mark.webp">
+<meta name="theme-color" content="#1B4332">
+<link rel="icon" href="/assets/img/logo-mark.webp" type="image/webp">
+<link rel="preload" href="/assets/fonts/fraunces-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/app.css">
+<link rel="stylesheet" href="/assets/css/print.css" media="print">
+{% block head %}{% endblock %}
+<script src="/assets/js/app.js" defer{% if site.gaId %} data-ga="{{ site.gaId }}"{% endif %}></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<a class="skip" href="#contenu">Aller au contenu</a>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="{{ path('home') }}" aria-label="Thé Tip Top, accueil"><img src="/assets/img/logo-mark.webp" width="30" height="36" alt=""><span>Thé Tip Top</span></a>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="menu"><span class="sr">Menu</span><i></i><i></i><i></i></button>
+    <nav id="menu" class="nav" aria-label="Navigation principale">
+      {% block nav %}
+      <a href="{{ path('home') }}">Le jeu</a><a href="{{ path('lots') }}">Les lots</a><a href="{{ path('how') }}">Comment participer</a><a href="{{ path('concept') }}">Le concept</a>
+      {% if is_granted('ROLE_PARTICIPANT') %}<a href="{{ path('my_gains') }}">Mes participations</a>{% endif %}
+      {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('admin_home') }}">Administration</a>{% elseif is_granted('ROLE_EMPLOYE') %}<a href="{{ path('shop_home') }}">Boutique</a>{% endif %}
+      {% endblock %}
+      <span class="nav-cta">
+      {% if app.user %}<a class="btn btn-ghost" href="{{ path('app_logout') }}">Se déconnecter</a>
+      {% else %}<a class="btn btn-ghost" href="{{ path('app_login') }}">Se connecter</a><a class="btn btn-main" data-cta href="{{ path('home') }}#code">Je participe</a>{% endif %}
+      </span>
+    </nav>
+  </div>
+</header>
+<div class="a11y" role="group" aria-label="Réglages d'accessibilité">
+  <button type="button" data-a11y="contrast" aria-pressed="false">Contraste renforcé</button><button type="button" data-a11y="text" aria-pressed="false">Texte agrandi</button><button type="button" data-a11y="motion" aria-pressed="false">Mettre en pause les animations</button>
+</div>
+{% for type, messages in app.flashes %}{% for m in messages %}
+<div class="wrap"><p class="flash flash-{{ type }}" role="{{ type == 'error' ? 'alert' : 'status' }}">{{ m }}</p></div>
+{% endfor %}{% endfor %}
+<main id="contenu" tabindex="-1">{% block body %}{% endblock %}</main>
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div><a class="brand brand-l" href="{{ path('home') }}"><img src="/assets/img/logo-mark-light.webp" width="30" height="36" alt=""><span>Thé Tip Top</span></a>
+      <ul class="social" aria-label="Réseaux sociaux"><li><a href="https://www.instagram.com/thetiptop.nice/" rel="noopener">Instagram</a></li><li><a href="https://www.facebook.com/" rel="noopener">Facebook</a></li><li><a href="https://www.tiktok.com/" rel="noopener">TikTok</a></li><li><a href="https://www.pinterest.fr/" rel="noopener">Pinterest</a></li></ul></div>
+    <nav aria-label="Pied de page"><ul class="foot-links">
+      <li><a href="/reglement">Règlement du jeu</a></li><li><a href="/mentions-legales">Mentions légales</a></li><li><a href="/cgu">CGU</a></li><li><a href="/confidentialite">Confidentialité</a></li><li><a href="/cookies">Cookies</a></li><li><a href="/accessibilite">Accessibilité</a></li><li><a href="{{ path('contact') }}">Contact</a></li><li><button type="button" class="linkish" data-cookies>Gérer mes cookies</button></li>
+    </ul></nav>
+    <form id="newsletter" class="news" method="post" action="{{ path('newsletter') }}">
+      <input type="hidden" name="_token" value="{{ csrf_token('newsletter') }}">
+      <label for="nl">Newsletter : conseils d'infusion et nouveautés</label>
+      <div class="row"><input id="nl" name="email" type="email" autocomplete="email" required placeholder="vous@exemple.fr"><button class="btn btn-main">S'inscrire</button></div>
+      <label class="check"><input type="checkbox" name="consent" required> J'accepte de recevoir la newsletter. Désinscription en un clic.</label>
+    </form>
+  </div>
+  <p class="wrap legal-note">Projet étudiant fictif, réalisé dans le cadre du diplôme Expert en stratégie et transformation digitale. Aucun achat, aucune réservation et aucune participation réelle ne peut être effectué sur ce site. © {{ 'now'|date('Y') }} Thé Tip Top — site réalisé par l'agence Furious Ducks.</p>
+</footer>
+<div class="cookie" id="cookie" role="dialog" aria-label="Choix des cookies" hidden>
+  <p>Nous utilisons des traceurs de mesure d'audience uniquement si vous l'acceptez. <a href="/cookies">En savoir plus</a></p>
+  <div class="row"><button class="btn btn-sec" data-consent="refuse">Refuser</button><button class="btn btn-sec" data-consent="accept">Accepter</button></div>
+</div>
+</body>
+</html>

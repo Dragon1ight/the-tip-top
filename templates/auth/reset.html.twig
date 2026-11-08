@@ -1,0 +1,6 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nouveau mot de passe — Thé Tip Top{% endblock %}
+{% block body_class %}tunnel{% endblock %}
+{% block body %}<section class="auth"><div class="card"><h1>Nouveau mot de passe</h1>
+{% if error %}<p class="err" role="alert">{{ error }}</p>{% endif %}
+<form method="post"><input type="hidden" name="_token" value="{{ csrf_token('reset') }}"><label for="pw">Mot de passe</label><input id="pw" type="password" name="password" autocomplete="new-password" required><button class="btn btn-sec block">Enregistrer</button></form></div></section>{% endblock %}

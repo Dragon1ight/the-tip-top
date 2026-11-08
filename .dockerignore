@@ -1,0 +1,7 @@
+.git
+vendor
+var
+node_modules
+tests
+.env.local
+docker-compose.yml

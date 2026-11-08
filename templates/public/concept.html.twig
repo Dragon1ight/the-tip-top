@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+{% block title %}Thé Tip Top — Thés bio et faits main, boutique à Nice{% endblock %}
+{% block description %}Depuis 2009, Thé Tip Top compose à la main des thés biologiques dont elle connaît chaque producteur. Découvrez notre dixième boutique, au cœur de Nice.{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap narrow">
+  <h1>Des thés dont nous connaissons chaque producteur</h1>
+  <h2>Une règle que nous n'avons jamais abandonnée</h2>
+  <p>Thé Tip Top est née en 2009 dans le onzième arrondissement de Paris, d'un constat simple : le thé vendu en France est le plus souvent un produit industriel, dont l'origine se perd entre le champ et la tasse. Nous nous sommes donné une règle — ne vendre que des thés dont nous connaissons le producteur, et ne composer nos mélanges qu'à la main.</p>
+  <h2>Le biologique, sans compromis</h2>
+  <p>Nos thés proviennent exclusivement de fermes engagées dans une agriculture biologique certifiée, choisies autant pour la qualité de leurs récoltes que pour les conditions de travail qu'elles offrent. Nous travaillons avec elles sur plusieurs récoltes, ce qui nous permet d'accompagner leurs pratiques et de leur offrir une visibilité que le marché au comptant ne donne jamais.</p>
+  <h2>Une gamme organisée par moments, pas par catalogues</h2>
+  <p>Nos mélanges signatures portent notre identité gustative. Nos thés détox et nos infusions accompagnent la fin de journée. Nos thés blancs constituent notre segment le plus rare. Nos thés légumes, enfin, sont une proposition que vous ne trouverez pas ailleurs. Tous sont composés en atelier, par lots courts, sans arôme de synthèse.</p>
+  <h2>Notre dixième boutique ouvre à Nice</h2>
+  <p>Après neuf boutiques ouvertes dans les centres urbains, nous nous installons pour la première fois sur la Méditerranée, au 12 rue Masséna. Comme les précédentes, cette boutique est un lieu de dégustation autant que de vente : on y goûte avant d'acheter, et l'on y demande conseil.</p>
+  <p>Pour fêter cette ouverture, nous offrons un lot à chacun de nos clients. <a href="{{ path('home') }}">Découvrez le jeu-concours</a> · <a href="{{ path('lots') }}">Voir les lots</a></p>
+</div></section>
+{% endblock %}

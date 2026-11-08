@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{% macro err(errors, k) %}{% if errors[k] is defined %}<p class="err" id="err-{{ k }}">{{ errors[k] }}</p>{% endif %}{% endmacro %}
+{% block title %}{{ tab == 'register' ? 'Créer un compte' : 'Connexion' }} — Thé Tip Top{% endblock %}
+{% block description %}Connectez-vous ou créez un compte pour découvrir votre lot Thé Tip Top.{% endblock %}
+{% block body_class %}tunnel{% endblock %}
+{% block body %}
+<section class="auth"><div class="card">
+  <h1>Rejoignez le jeu</h1>
+  <p class="muted">Un compte vous permet de suivre vos gains et de participer au tirage du gros lot.</p>
+  <div class="tabs"><a href="{{ path('app_register') }}"{% if tab == 'register' %} aria-current="page"{% endif %}>Créer un compte</a><a href="{{ path('app_login') }}"{% if tab == 'login' %} aria-current="page"{% endif %}>Se connecter</a></div>
+  {% if site.sso('google') %}<a class="btn btn-ghost block" href="{{ path('sso_start', {provider:'google'}) }}">Continuer avec Google</a>{% endif %}
+  {% if site.sso('facebook') %}<a class="btn btn-ghost block" href="{{ path('sso_start', {provider:'facebook'}) }}">Continuer avec Facebook</a>{% endif %}
+  {% if site.sso('google') or site.sso('facebook') %}<p class="or">ou avec votre adresse e-mail</p>{% endif %}
+  {% if tab == 'login' %}
+  <form method="post" action="{{ path('app_login') }}">
+    {% if error %}<p class="err" role="alert">Identifiants incorrects, ou trop de tentatives. Vérifiez votre saisie.</p>{% endif %}
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+    <label for="email">Adresse e-mail ou identifiant</label><input id="email" name="email" value="{{ last }}" autocomplete="username" required>
+    <label for="password">Mot de passe</label><input id="password" type="password" name="password" autocomplete="current-password" required>
+    <button class="btn btn-sec block">Se connecter</button>
+    <p><a href="{{ path('forgot') }}">Mot de passe oublié ?</a></p>
+  </form>
+  {% else %}
+  {% import _self as m %}
+  <form method="post" action="{{ path('app_register') }}" data-track="inscription" novalidate>
+    <input type="hidden" name="_token" value="{{ csrf_token('register') }}">
+    <div class="two"><div><label for="prenom">Prénom</label><input id="prenom" name="prenom" value="{{ form.prenom|default('') }}" autocomplete="given-name" required>{{ m.err(errors,'prenom') }}</div><div><label for="nom">Nom</label><input id="nom" name="nom" value="{{ form.nom|default('') }}" autocomplete="family-name" required>{{ m.err(errors,'nom') }}</div></div>
+    <label for="reg-email">Adresse e-mail</label><input id="reg-email" type="email" name="email" value="{{ form.email|default('') }}" autocomplete="email" required{% if errors.email is defined %} aria-invalid="true" aria-describedby="err-email"{% endif %}>{{ m.err(errors,'email') }}
+    <div class="two"><div><label for="dn">Date de naissance</label><input id="dn" type="date" name="date_naissance" value="{{ form.date_naissance|default('') }}" autocomplete="bday" required>{{ m.err(errors,'date_naissance') }}</div><div><label for="civ">Civilité</label><select id="civ" name="civilite" required><option value="">Sélectionner</option>{% for v,l in {madame:'Madame',monsieur:'Monsieur',autre:'Autre'} %}<option value="{{ v }}"{% if form.civilite|default('') == v %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>{{ m.err(errors,'civilite') }}</div></div>
+    <p class="hint">Ces informations servent uniquement aux statistiques du jeu et à vérifier votre majorité. Elles ne sont jamais transmises à des tiers.</p>
+    <label for="cp">Code postal (facultatif)</label><input id="cp" name="code_postal" value="{{ form.code_postal|default('') }}" inputmode="numeric" autocomplete="postal-code">{{ m.err(errors,'code_postal') }}
+    <label for="reg-pw">Mot de passe</label><input id="reg-pw" type="password" name="password" autocomplete="new-password" required><p class="hint">12 caractères minimum, avec des lettres et des chiffres.</p>{{ m.err(errors,'password') }}
+    <label class="check"><input type="checkbox" name="reglement"{% if form.reglement is defined %} checked{% endif %}> J'accepte le <a href="/reglement">règlement du jeu</a> et les <a href="/cgu">conditions générales d'utilisation</a>.</label>{{ m.err(errors,'reglement') }}
+    <label class="check"><input type="checkbox" name="marketing"{% if form.marketing is defined %} checked{% endif %}> Je souhaite recevoir les actualités et les offres de Thé Tip Top par e-mail. Facultatif, sans effet sur votre participation.</label>
+    <button class="btn btn-sec block">Créer mon compte</button>
+    <p class="hint">Vos données sont traitées par Thé Tip Top pour gérer le jeu. Durée de conservation : trois ans. Droits d'accès, de rectification et d'effacement : <a href="/confidentialite">politique de confidentialité</a>.</p>
+  </form>
+  {% endif %}
+</div></section>
+{% endblock %}

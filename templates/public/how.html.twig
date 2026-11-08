@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{% block title %}Comment participer au jeu-concours Thé Tip Top{% endblock %}
+{% block description %}Un achat de plus de 49 € dans l'une de nos dix boutiques, un code à dix caractères, un compte : les trois étapes pour participer au jeu-concours Thé Tip Top.{% endblock %}
+{% block body %}
+<section class="plain"><div class="wrap narrow">
+  <h1>Comment participer</h1>
+  <ol class="steps"><li><h2>Achetez pour plus de 49 €</h2><p>Votre ticket de caisse ou votre facture porte un code unique à dix caractères.</p></li><li><h2>Saisissez votre code</h2><p>Sur la page d'accueil, avec un compte classique ou votre compte Google ou Facebook.</p></li><li><h2>Récupérez votre lot</h2><p>En boutique ou par expédition, jusqu'au {{ site.dateFr(site.claimEnd) }}.</p></li></ol>
+  <h2>Les dates à retenir</h2>
+  <ul><li>Jeu ouvert du {{ site.dateFr(site.start) }} au {{ site.dateFr(site.end) }}.</li><li>Saisie des codes et réclamation des lots jusqu'au {{ site.dateFr(site.claimEnd) }}.</li><li>Tirage au sort du gros lot à l'issue de cette période.</li></ul>
+  {% include 'public/_code_form.html.twig' %}
+</div></section>
+{% endblock %}

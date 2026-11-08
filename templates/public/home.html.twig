@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% block title %}Jeu-concours Thé Tip Top — Tous les tickets gagnants{% endblock %}
+{% block description %}Votre ticket de caisse Thé Tip Top de plus de 49 € porte un code à dix caractères. Saisissez-le : votre lot vous attend, en boutique ou chez vous.{% endblock %}
+{% block head %}
+<script type="application/ld+json">{{ {'@context':'https://schema.org','@graph':[{'@type':'Organization','name':'Thé Tip Top','url':site.url},{'@type':'LocalBusiness','name':'Thé Tip Top Nice','address':{'@type':'PostalAddress','streetAddress':'12 rue Masséna','addressLocality':'Nice','postalCode':'06000','addressCountry':'FR'}}]}|json_encode(constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES'))|raw }}</script>
+{% endblock %}
+{% block body %}
+<section class="hero"><div class="wrap">
+  <p class="eyebrow">Jeu-concours — du {{ site.dateFr(site.start) }} au {{ site.dateFr(site.end) }}</p>
+  <h1>100 % des tickets sont gagnants.</h1>
+  <p class="lead">Votre ticket de caisse ou votre facture d'un montant supérieur à 49 € porte un code à dix caractères. Saisissez-le ci-dessous : votre lot s'affiche immédiatement, et vous choisissez de le retirer dans l'une de nos dix boutiques ou de le recevoir chez vous.</p>
+  {% include 'public/_code_form.html.twig' %}
+  <div class="count" data-countdown="{{ site.end|date('c') }}" aria-label="Temps restant avant la clôture du jeu"><span><b data-d>—</b>jours</span><span><b data-h>—</b>heures</span><span><b data-m>—</b>min</span></div>
+  <p class="hero-note">À l'occasion de l'ouverture de notre 10ᵉ boutique — 12 rue Masséna, Nice</p>
+</div></section>
+<section class="band"><div class="wrap">
+  <h2>Les lots à gagner</h2>
+  <p>Chaque code correspond à un lot déjà attribué, selon une répartition arrêtée à l'avance et déposée avec le règlement du jeu. Six participants sur dix reçoivent un infuseur à thé en acier et bambou ; deux sur dix une boîte de 100 g de thé détox ou d'infusion ; un sur dix une boîte de 100 g de thé signature. Six pour cent des tickets donnent droit à un coffret découverte d'une valeur de 39 €, et quatre pour cent à un coffret d'une valeur de 69 €.</p>
+  {% include 'public/_lots.html.twig' %}
+  <div class="grand"><strong>360 €</strong><div><h3>Le gros lot : un an de thé</h3><p>À l'issue de la période de réclamation, un tirage au sort désigne parmi l'ensemble des participants le gagnant d'un an de thé, d'une valeur de 360 €. Ce tirage est effectué sous le contrôle de Maître Arnaud Rick, huissier de justice, auprès duquel le règlement complet a été déposé. Le nombre de participations n'augmente pas les chances de gagner.</p></div></div>
+</div></section>
+<section class="plain"><div class="wrap">
+  <h2>Une maison de thé qui célèbre sa dixième boutique</h2>
+  <p>Thé Tip Top compose depuis 2009 des thés biologiques et faits main, dont elle connaît chaque producteur. Pour l'ouverture de sa dixième boutique, au 12 rue Masséna à Nice, la maison offre un lot à chacun de ses clients. <a href="{{ path('concept') }}">Découvrir le concept</a></p>
+  <h2>Comment participer</h2>
+  <ol class="steps"><li><h3>Trouvez votre code</h3><p>Il figure en bas de votre ticket de caisse, sous le montant total. Dix caractères, chiffres et lettres.</p></li><li><h3>Saisissez-le sur cette page</h3><p>Vous pouvez créer un compte avec votre adresse électronique, ou vous connecter avec un compte Google ou Facebook.</p></li><li><h3>Récupérez votre lot</h3><p>En boutique, dans les 30 jours suivant la clôture du jeu, ou par expédition à votre domicile. Retrouvez nos dix boutiques.</p></li></ol>
+  <p><a href="{{ path('lots') }}">Voir tous les lots</a> · <a href="/reglement">Lire le règlement</a></p>
+</div></section>
+{% endblock %}

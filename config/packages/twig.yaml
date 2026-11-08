@@ -1,0 +1,10 @@
+twig:
+    file_name_pattern: '*.twig'
+    globals:
+        site: '@App\Service\Site'
+    date:
+        timezone: Europe/Paris
+    number_format:
+        decimals: 0
+        decimal_point: ','
+        thousands_separator: ' '

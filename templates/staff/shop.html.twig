@@ -1,0 +1,13 @@
+{% extends 'staff/layout.html.twig' %}
+{% block title %}Remise des lots — Thé Tip Top{% endblock %}
+{% set labels = {a_retirer:'À retirer',remis:'Remis',expedie:'Expédié',expire:'Expiré'} %}
+{% block body %}
+<section class="plain"><div class="wrap narrow">
+  <h1>Remise des lots</h1>
+  <form method="get" class="card"><label for="q">Code ou adresse e-mail du client</label><div class="row"><input id="q" name="q" value="{{ q }}" required><button class="btn btn-sec">Rechercher</button></div></form>
+  {% if q and rows is empty %}<p class="flash flash-info">Aucun lot trouvé. Une participation en ligne est nécessaire avant tout retrait.</p>{% endif %}
+  {% for x in rows %}<div class="card"><p><strong>{{ x.libelle }}</strong> — <span class="mono">{{ x.code_valeur }}</span> <span class="tag tag-{{ x.affiche }}">{{ labels[x.affiche] }}</span></p><p>Client : {{ x.prenom }} {{ x.initiale }}.{% if x.mode_remise == 'expedition' %} — Expédition : {{ x.adresse_expedition }}{% endif %}</p>
+  {% if x.affiche == 'a_retirer' %}<form method="post" action="{{ path('shop_deliver',{id:x.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('deliver' ~ x.id) }}"><input type="hidden" name="q" value="{{ q }}"><label for="m{{ x.id }}">Substitution (motif, si rupture de stock)</label><input id="m{{ x.id }}" name="motif"><button class="btn btn-main">Valider la remise</button></form>
+  {% elseif x.remis_le %}<p class="muted">Remis le {{ x.remis_le|date('d/m/Y à H:i') }}{% if x.boutique %} à {{ x.boutique }}{% endif %}.</p>{% endif %}</div>{% endfor %}
+</div></section>
+{% endblock %}
