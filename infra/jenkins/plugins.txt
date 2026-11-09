@@ -1,0 +1,12 @@
+configuration-as-code
+job-dsl
+workflow-aggregator
+workflow-multibranch
+pipeline-input-step
+git
+github
+github-branch-source
+credentials-binding
+plain-credentials
+junit
+timestamper

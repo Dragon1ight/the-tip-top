@@ -1,0 +1,7 @@
+title = "the-tip-top"
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Valeurs de démonstration locale, sans valeur en production"
+paths = ['''docker-compose\.yml''', '''\.env\.test''', '''\.env\.dev''', '''tests/.*''', '''composer\.lock''', '''public/vendor/.*''']

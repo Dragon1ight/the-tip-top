@@ -3,7 +3,6 @@
 set -u
 PORT="${PORT:-10000}"
 export PORT
-sed -i "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
 cd /var/www/html
 if [ -n "${DATABASE_URL:-}" ]; then
   i=0
@@ -12,5 +11,4 @@ if [ -n "${DATABASE_URL:-}" ]; then
     (php -d memory_limit=-1 bin/console app:codes:generate "$CODES_AUTOGEN" --no-interaction >/proc/1/fd/1 2>&1 &)
   fi
 fi
-chown -R www-data:www-data var
 exec apache2-foreground

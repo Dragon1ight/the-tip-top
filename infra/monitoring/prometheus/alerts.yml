@@ -1,0 +1,18 @@
+groups:
+  - name: workflow
+    rules:
+      - alert: SiteIndisponible
+        # Deux sondes consécutives en échec (une sonde toutes les 30 minutes).
+        expr: max_over_time(probe_success{job="site"}[65m]) == 0
+        labels: { severity: critical }
+        annotations: { summary: "Le site ne répond plus" }
+      - alert: DisqueBientotPlein
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.15
+        for: 15m
+        labels: { severity: warning }
+        annotations: { summary: "Moins de 15 % de disque libre sur le serveur" }
+      - alert: SauvegardeAbsente
+        expr: time() - backup_last_success_timestamp > 28800
+        for: 10m
+        labels: { severity: critical }
+        annotations: { summary: "Aucune sauvegarde réussie depuis plus de 8 heures" }

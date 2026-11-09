@@ -15,7 +15,7 @@ COPY . .
 RUN composer dump-autoload --no-dev --classmap-authoritative --ignore-platform-reqs
 
 FROM php:8.3-apache
-RUN apt-get update -qq && apt-get install -y -qq ca-certificates libzip-dev >/dev/null \
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates libzip-dev >/dev/null \
  && docker-php-ext-install -j2 pdo_mysql opcache >/dev/null \
  && pecl install redis >/dev/null && docker-php-ext-enable redis \
  && a2enmod rewrite headers deflate expires remoteip >/dev/null \
@@ -28,7 +28,9 @@ COPY --chown=www-data:www-data --from=assets /b/out/js /var/www/html/public/asse
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh && cd /var/www/html \
  && APP_ENV=prod APP_SECRET=build APP_DEBUG=0 php bin/console cache:warmup --no-interaction \
- && chown -R www-data:www-data var
+ && chown -R www-data:www-data var \
+ && sed -i 's/^Listen .*/Listen ${PORT}/' /etc/apache2/ports.conf
 ENV APP_ENV=prod APP_DEBUG=0 PORT=10000
 EXPOSE 10000
+USER www-data
 CMD ["/entrypoint.sh"]

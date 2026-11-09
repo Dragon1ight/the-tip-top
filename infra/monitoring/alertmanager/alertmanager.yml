@@ -1,0 +1,7 @@
+# Récepteur à compléter avec l'adresse ou le webhook de l'équipe.
+route:
+  receiver: equipe
+  group_wait: 1m
+  repeat_interval: 4h
+receivers:
+  - name: equipe

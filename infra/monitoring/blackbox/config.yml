@@ -1,0 +1,8 @@
+modules:
+  # Render gratuit peut mettre environ une minute à sortir de veille.
+  http_cold_start:
+    prober: http
+    timeout: 90s
+    http:
+      preferred_ip_protocol: ip4
+      valid_status_codes: [200]

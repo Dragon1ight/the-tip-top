@@ -29,7 +29,7 @@ final class Game
         if (!$this->site->isOpen()) {
             return ['ok' => false, 'error' => 'clos', 'message' => 'La saisie des codes est ouverte du '.$this->site->dateFr($this->site->start()).' au '.$this->site->dateFr($this->site->claimEnd()).'.'];
         }
-        if (!$this->quota->hit('code:'.$participantId, self::MAX_TRIES, 3600)) {
+        if (!$this->quota->hit('code:'.$participantId, (int) $this->site->env('CODE_QUOTA', (string) self::MAX_TRIES), 3600)) {
             return ['ok' => false, 'error' => 'quota', 'message' => 'Trop de tentatives : vous pourrez réessayer dans une heure.'];
         }
         $code = self::normalize($raw);

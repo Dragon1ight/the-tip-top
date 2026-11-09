@@ -1,0 +1,165 @@
+# Serveur du workflow (VPS Linux) : tous les outils en conteneurs.
+# Les secrets viennent du fichier infra/.env, jamais versionné (modèle : infra/.env.example).
+name: workflow
+x-restart: &restart { restart: unless-stopped }
+services:
+  traefik:
+    <<: *restart
+    image: traefik:v3.7.17
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=proxy
+      - --providers.file.directory=/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:?}
+      - --certificatesresolvers.letsencrypt.acme.storage=/acme/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    ports: ["80:80", "443:443"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_dynamic:/dynamic
+      - traefik_acme:/acme
+    networks: [proxy]
+
+  registry:
+    <<: *restart
+    image: registry:2.8
+    # Visible du seul démon Docker de l'hôte, qui pousse et tire les images.
+    ports: ["127.0.0.1:5000:5000"]
+    volumes: [registry:/var/lib/registry]
+    networks: [ci]
+
+  jenkins:
+    <<: *restart
+    build: ./jenkins
+    environment:
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?}
+      JENKINS_URL: https://jenkins.${WORKFLOW_DOMAIN:?}/
+      GITHUB_USER: ${GITHUB_USER:-}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-none}
+      RENDER_API_KEY: ${RENDER_API_KEY:-none}
+      NVD_API_KEY: ${NVD_API_KEY:-}
+      SONAR_URL: http://sonarqube:9000
+      SONAR_NETWORK: workflow_ci
+      SONAR_TOKEN: ${SONAR_TOKEN:-}
+      REGISTRY_HOST: ${REGISTRY_HOST:-localhost:5000}
+      PUBLIC_HOST: ${PUBLIC_HOST:?}
+      PUBLIC_URL: https://${PUBLIC_HOST}
+      DEV_URL: https://dev.${WORKFLOW_DOMAIN}
+      PREPROD_URL: https://preprod.${WORKFLOW_DOMAIN}
+      TRAEFIK_DYNAMIC_DIR: /traefik-dynamic
+      PUSHGATEWAY_URL: http://pushgateway:9091
+      ENV_DIR: /run/env
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - traefik_dynamic:/traefik-dynamic
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/workflow/env:/run/env:ro
+    networks: [ci, proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.jenkins.rule=Host(`jenkins.${WORKFLOW_DOMAIN}`)
+      - traefik.http.routers.jenkins.entrypoints=websecure
+      - traefik.http.routers.jenkins.tls.certresolver=letsencrypt
+      - traefik.http.services.jenkins.loadbalancer.server.port=8080
+
+  sonarqube:
+    <<: *restart
+    image: sonarqube:10.7-community
+    environment: { SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true" }
+    volumes: [sonar_data:/opt/sonarqube/data, sonar_extensions:/opt/sonarqube/extensions]
+    networks: [ci, proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.sonar.rule=Host(`sonar.${WORKFLOW_DOMAIN}`)
+      - traefik.http.routers.sonar.entrypoints=websecure
+      - traefik.http.routers.sonar.tls.certresolver=letsencrypt
+      - traefik.http.services.sonar.loadbalancer.server.port=9000
+
+  prometheus:
+    <<: *restart
+    image: prom/prometheus:v3.0.1
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.retention.time=30d]
+    volumes: [./monitoring/prometheus:/etc/prometheus:ro, prometheus:/prometheus, traefik_dynamic:/targets:ro]
+    networks: [ci, proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.prom.rule=Host(`prometheus.${WORKFLOW_DOMAIN}`)
+      - traefik.http.routers.prom.entrypoints=websecure
+      - traefik.http.routers.prom.tls.certresolver=letsencrypt
+      - traefik.http.routers.prom.middlewares=prom-auth
+      - traefik.http.middlewares.prom-auth.basicauth.users=${PROMETHEUS_BASIC_AUTH:?}
+      - traefik.http.services.prom.loadbalancer.server.port=9090
+
+  pushgateway:
+    <<: *restart
+    image: prom/pushgateway:v1.10.0
+    networks: [ci]
+
+  alertmanager:
+    <<: *restart
+    image: prom/alertmanager:v0.27.0
+    volumes: [./monitoring/alertmanager:/etc/alertmanager:ro]
+    networks: [ci]
+
+  grafana:
+    <<: *restart
+    image: grafana/grafana:11.3.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes: [grafana:/var/lib/grafana, ./monitoring/grafana:/etc/grafana/provisioning:ro]
+    networks: [ci, proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.grafana.rule=Host(`grafana.${WORKFLOW_DOMAIN}`)
+      - traefik.http.routers.grafana.entrypoints=websecure
+      - traefik.http.routers.grafana.tls.certresolver=letsencrypt
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+
+  node-exporter:
+    <<: *restart
+    image: prom/node-exporter:v1.8.2
+    command: [--path.rootfs=/host]
+    pid: host
+    volumes: ["/:/host:ro,rslave"]
+    networks: [ci]
+
+  cadvisor:
+    <<: *restart
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    privileged: true
+    volumes: ["/:/rootfs:ro", "/var/run:/var/run:ro", "/sys:/sys:ro", "/var/lib/docker:/var/lib/docker:ro"]
+    networks: [ci]
+
+  blackbox:
+    <<: *restart
+    image: prom/blackbox-exporter:v0.25.0
+    volumes: [./monitoring/blackbox:/etc/blackbox_exporter:ro]
+    networks: [ci]
+
+  backup:
+    <<: *restart
+    build: ./backup
+    env_file: [.env]
+    volumes:
+      - jenkins_home:/data/jenkins:ro
+      - grafana:/data/grafana:ro
+      - prometheus:/data/prometheus:ro
+      - registry:/data/registry:ro
+      - backup_mirror:/data/mirror
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks: [ci]
+
+volumes: { traefik_dynamic: {}, traefik_acme: {}, registry: {}, jenkins_home: {}, sonar_data: {}, sonar_extensions: {}, prometheus: {}, grafana: {}, backup_mirror: {} }
+networks:
+  ci: { name: workflow_ci }
+  proxy: { name: proxy }

@@ -13,3 +13,6 @@
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+reports/
+.phpunit.cache/
+/infra/.env

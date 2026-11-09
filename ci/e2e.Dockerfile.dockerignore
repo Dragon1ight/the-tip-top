@@ -1,0 +1,5 @@
+.git
+vendor
+var
+reports
+node_modules

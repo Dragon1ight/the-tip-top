@@ -1,0 +1,13 @@
+# Surcharge pour les tests : aucun port publié, comportement proche de la production.
+services:
+  web:
+    ports: !reset []
+    environment:
+      SITE_ENV: prod
+      SITE_URL: http://web:10000
+      CODE_QUOTA: "100000"
+      GAME_FORCE_OPEN: "1"
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1:10000/sante') === false ? 1 : 0);"]
+      interval: 3s
+      retries: 40
